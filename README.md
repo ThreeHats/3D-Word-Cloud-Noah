@@ -43,6 +43,15 @@ pnpm run dev
 3. Wait for analysis
 4. Drag to rotate, scroll to zoom, hover for effects
 
+## Features
+
+- 3D word cloud using Fibonacci sphere layout
+- TF-IDF keyword extraction
+- Hover effects and smooth camera controls
+- PNG export - download the visualization
+- Embed - generates iframe with compressed URL data (stateless, no DB)
+- URL bookmarking - share/bookmark word clouds via URL
+
 ## Tech Stack
 
 - React + TypeScript + Vite
