@@ -15,3 +15,16 @@ body {
   width: 100vw;
   height: 100vh;
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+input:disabled, button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+  filter: brightness(1.1);
+}
