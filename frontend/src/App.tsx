@@ -62,7 +62,14 @@ function App() {
       const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(cloudData));
       window.history.pushState({}, '', `/?data=${compressed}`);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to analyze article. Check the URL and try again.');
+      // Differentiate between server errors and article errors
+      if (!err.response) {
+        setError('Unable to connect to server. Please try again.');
+      } else if (err.response.status >= 500) {
+        setError('Server error. Please try again in a moment.');
+      } else {
+        setError(err.response?.data?.detail || 'Failed to analyze article. Check the URL and try again.');
+      }
     } finally {
       setLoading(false);
     }
