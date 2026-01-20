@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AnalyzeResponse } from '../types';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:8000`;
 
 export async function analyzeArticle(url: string): Promise<AnalyzeResponse> {
   const { data } = await axios.post<AnalyzeResponse>(`${API_BASE}/analyze`, { url });
