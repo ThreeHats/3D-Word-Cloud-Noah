@@ -38,6 +38,7 @@ const styles = {
     gap: '10px',
     width: '100%',
     maxWidth: '600px',
+    pointerEvents: 'auto' as const,
   },
   input: {
     flex: 1,

@@ -73,7 +73,7 @@ const styles = {
     alignItems: 'center',
     gap: '12px',
     padding: '30px',
-    pointerEvents: 'auto' as const,
+    pointerEvents: 'none' as const,
   },
   title: {
     fontSize: '32px',

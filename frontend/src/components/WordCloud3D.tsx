@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, useEffect } from 'react';
 import { Word } from '../types';
 import { calculateWordPositions } from '../utils/wordLayout';
 import { getColorForWeight } from '../utils/colorPalette';
+import { ExportButton } from './ExportButton';
 import * as THREE from 'three';
 
 interface WordCloud3DProps {
@@ -72,7 +73,7 @@ function WordMesh({ word, position }: { word: Word; position: [number, number, n
 }
 
 function Scene({ words }: { words?: Word[] }) {
-  const { camera, size } = useThree();
+  const { camera, size, gl, scene } = useThree();
   
   const positions = useMemo(() => {
     if (!words) return [];
@@ -109,6 +110,14 @@ function Scene({ words }: { words?: Word[] }) {
     camera.lookAt(0, 0, 0);
   }, [size, camera]);
 
+  // Expose export function to parent
+  useEffect(() => {
+    (window as any).__exportWordCloud = () => {
+      gl.render(scene, camera);
+      return gl.domElement;
+    };
+  }, [gl, scene, camera]);
+
   return (
     <>
       <ambientLight intensity={0.5} />
@@ -135,6 +144,27 @@ function Scene({ words }: { words?: Word[] }) {
 }
 
 export function WordCloud3D({ words, title }: WordCloud3DProps) {
+  const handleExport = () => {
+    const canvas = (window as any).__exportWordCloud?.();
+    if (!canvas) return;
+
+    canvas.toBlob((blob: Blob | null) => {
+      if (!blob) return;
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const timestamp = Date.now();
+      const filename = title 
+        ? `wordcloud-${title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${timestamp}.png`
+        : `wordcloud-${timestamp}.png`;
+      
+      link.download = filename;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+  };
+
   return (
     <div style={{ 
       position: 'fixed',
@@ -146,10 +176,12 @@ export function WordCloud3D({ words, title }: WordCloud3DProps) {
     }}>
       <Canvas
         camera={{ position: [0, 0, 50], fov: 75 }}
+        gl={{ preserveDrawingBuffer: true }}
         style={{ width: '100%', height: '100%' }}
       >
         <Scene words={words} />
       </Canvas>
+      {words && <ExportButton onClick={handleExport} />}
       {words && title && (
         <div style={{ 
           position: 'absolute',

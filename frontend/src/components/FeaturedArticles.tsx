@@ -48,6 +48,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
+    pointerEvents: 'auto' as const,
     gap: '8px',
   },
   title: {
