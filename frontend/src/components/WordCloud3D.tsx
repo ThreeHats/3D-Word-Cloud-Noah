@@ -1,6 +1,6 @@
-import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
+import { Canvas, useFrame, ThreeEvent, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, Text, Html } from '@react-three/drei';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { Word } from '../types';
 import { calculateWordPositions } from '../utils/wordLayout';
 import { getColorForWeight } from '../utils/colorPalette';
@@ -72,6 +72,8 @@ function WordMesh({ word, position }: { word: Word; position: [number, number, n
 }
 
 function Scene({ words }: { words?: Word[] }) {
+  const { camera, size } = useThree();
+  
   const positions = useMemo(() => {
     if (!words) return [];
     return calculateWordPositions(words);
@@ -81,6 +83,31 @@ function Scene({ words }: { words?: Word[] }) {
     if (!words) return [];
     return [...words].sort((a, b) => b.weight - a.weight);
   }, [words]);
+
+  // Responsive camera positioning based on window size
+  useEffect(() => {
+    const aspectRatio = size.width / size.height;
+    
+    // Adjust camera distance based on aspect ratio and screen size
+    // Mobile portrait: zoom way out; Portrait tablet: zoom out more; Landscape: standard
+    const baseDistance = 50;
+    const isMobile = size.width < 768;
+    
+    let distance;
+    if (aspectRatio < 0.75 && isMobile) {
+      // Mobile portrait - zoom out significantly
+      distance = baseDistance * 1.8;
+    } else if (aspectRatio < 1) {
+      // Portrait tablet or larger portrait screen
+      distance = baseDistance * 1.4;
+    } else {
+      // Landscape or square
+      distance = baseDistance;
+    }
+    
+    camera.position.set(0, 0, distance);
+    camera.lookAt(0, 0, 0);
+  }, [size, camera]);
 
   return (
     <>
