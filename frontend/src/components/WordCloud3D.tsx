@@ -10,6 +10,51 @@ import * as THREE from 'three';
 interface WordCloud3DProps {
   words?: Word[];
   title?: string;
+  onEmbed?: () => void;
+  isEmbedded?: boolean;
+}
+
+function EmbedButton({ onClick }: { onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '110px',
+        padding: '10px 18px',
+        backgroundColor: hovered ? 'rgba(124, 58, 237, 0.25)' : 'rgba(124, 58, 237, 0.15)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        color: 'white',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '12px',
+        fontSize: '13px',
+        fontWeight: '500',
+        cursor: 'pointer',
+        boxShadow: hovered 
+          ? '0 8px 24px rgba(124, 58, 237, 0.3), inset 0 1px 0 rgba(255,255,255,0.1)' 
+          : '0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)',
+        transform: hovered ? 'translateY(-1px) scale(1.02)' : 'translateY(0) scale(1)',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        zIndex: 1000,
+        pointerEvents: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+      }}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </svg>
+      Embed
+    </button>
+  );
 }
 
 function WordMesh({ word, position }: { word: Word; position: [number, number, number] }) {
@@ -143,7 +188,7 @@ function Scene({ words }: { words?: Word[] }) {
   );
 }
 
-export function WordCloud3D({ words, title }: WordCloud3DProps) {
+export function WordCloud3D({ words, title, onEmbed, isEmbedded = false }: WordCloud3DProps) {
   const handleExport = () => {
     const canvas = (window as any).__exportWordCloud?.();
     if (!canvas) return;
@@ -181,8 +226,9 @@ export function WordCloud3D({ words, title }: WordCloud3DProps) {
       >
         <Scene words={words} />
       </Canvas>
-      {words && <ExportButton onClick={handleExport} />}
-      {words && title && (
+      {words && !isEmbedded && <ExportButton onClick={handleExport} />}
+      {words && !isEmbedded && onEmbed && <EmbedButton onClick={onEmbed} />}
+      {words && title && !isEmbedded && (
         <div style={{ 
           position: 'absolute',
           top: '60px',
