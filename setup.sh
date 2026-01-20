@@ -20,7 +20,7 @@ pip install -q --upgrade pip
 pip install -q -r requirements.txt
 
 echo "Downloading NLTK data..."
-python3 -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('stopwords', quiet=True); nltk.download('wordnet', quiet=True)"
+python3 -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('punkt_tab', quiet=True); nltk.download('stopwords', quiet=True); nltk.download('wordnet', quiet=True)"
 
 cd ..
 

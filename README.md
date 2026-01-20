@@ -47,6 +47,12 @@ pnpm run dev
 - Scikit-learn (TF-IDF)
 - Newspaper3k (article scraping)
 
+## Tests
+
+```bash
+./test.sh
+```
+
 ## API
 
 **POST /analyze**
