@@ -26,7 +26,7 @@ interface FeaturedArticlesProps {
 export function FeaturedArticles({ onSelect, disabled }: FeaturedArticlesProps) {
   return (
     <div style={styles.container}>
-      <h3 style={styles.title}>Try these articles:</h3>
+      <p style={styles.title}>Try these articles:</p>
       <div style={styles.grid}>
         {FEATURED.map((article) => (
           <button
@@ -45,29 +45,33 @@ export function FeaturedArticles({ onSelect, disabled }: FeaturedArticlesProps) 
 
 const styles = {
   container: {
-    marginTop: '30px',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '8px',
   },
   title: {
-    fontSize: '14px',
+    fontSize: '13px',
     color: '#888',
-    marginBottom: '15px',
+    margin: 0,
     fontWeight: 400,
   },
   grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '10px',
-    maxWidth: '600px',
+    display: 'flex',
+    flexDirection: 'row' as const,
+    gap: '8px',
+    flexWrap: 'wrap' as const,
+    justifyContent: 'center',
   },
   card: {
-    padding: '15px',
+    padding: '6px 12px',
     border: '1px solid #333',
-    borderRadius: '8px',
+    borderRadius: '6px',
     background: '#1a1a1a',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '14px',
-    textAlign: 'left' as const,
+    fontSize: '12px',
     transition: 'all 0.2s',
+    whiteSpace: 'nowrap' as const,
   },
 };
