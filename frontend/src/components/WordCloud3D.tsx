@@ -1,6 +1,6 @@
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars, Text } from '@react-three/drei';
-import { useMemo, useRef } from 'react';
+import { Canvas, useFrame, ThreeEvent } from '@react-three/fiber';
+import { OrbitControls, Stars, Text, Html } from '@react-three/drei';
+import { useMemo, useRef, useState } from 'react';
 import { Word } from '../types';
 import { calculateWordPositions } from '../utils/wordLayout';
 import { getColorForWeight } from '../utils/colorPalette';
@@ -15,27 +15,59 @@ function WordMesh({ word, position }: { word: Word; position: [number, number, n
   const fontSize = 2 + word.weight * 3;
   const color = getColorForWeight(word.weight);
   const meshRef = useRef<THREE.Mesh>(null);
+  const [hovered, setHovered] = useState(false);
+  const [scale, setScale] = useState(1);
 
   useFrame(({ camera }) => {
     if (meshRef.current) {
       meshRef.current.quaternion.copy(camera.quaternion);
+      
+      // Smooth scale animation
+      const targetScale = hovered ? 1.1 : 1;
+      setScale(prev => prev + (targetScale - prev) * 0.12);
+      meshRef.current.scale.setScalar(scale);
     }
   });
 
   return (
-    <Text
-      ref={meshRef}
-      position={position}
-      fontSize={fontSize}
-      color={color}
-      anchorX="center"
-      anchorY="middle"
-      outlineWidth={fontSize * 0.05}
-      outlineColor="#000000"
-      fillOpacity={0.95}
-    >
-      {word.text}
-    </Text>
+    <>
+      <Text
+        ref={meshRef}
+        position={position}
+        fontSize={fontSize}
+        color={color}
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={fontSize * (hovered ? 0.06 : 0.05)}
+        outlineColor="#000000"
+        fillOpacity={hovered ? 1 : 0.95}
+        onPointerOver={(e: ThreeEvent<PointerEvent>) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={() => {
+          setHovered(false);
+        }}
+      >
+        {word.text}
+      </Text>
+      {hovered && (
+        <Html position={position} center>
+          <div style={{
+            background: 'rgba(0, 0, 0, 0.75)',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            transform: 'translateY(-30px)'
+          }}>
+            {(word.weight * 100).toFixed(0)}%
+          </div>
+        </Html>
+      )}
+    </>
   );
 }
 
@@ -94,8 +126,9 @@ export function WordCloud3D({ words, title }: WordCloud3DProps) {
       {words && title && (
         <div style={{ 
           position: 'absolute',
-          bottom: '150px',
+          top: '60px',
           left: '50%',
+          width: '100%',
           transform: 'translateX(-50%)',
           color: '#666',
           fontSize: '14px',

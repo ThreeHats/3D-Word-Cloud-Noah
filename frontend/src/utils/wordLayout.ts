@@ -18,7 +18,7 @@ export function calculateWordPositions(words: Word[]): Position3D[] {
     
     // Radius grows from center outward (0 -> max radius)
     // First word (highest weight) gets smallest radius, last word gets largest
-    const minRadius = 15;  // Start further from center to avoid clustering
+    const minRadius = 20;  // Start further from center to avoid clustering
     const maxRadius = 50; // Extend to edges
     const radius = minRadius + t * (maxRadius - minRadius);
     
